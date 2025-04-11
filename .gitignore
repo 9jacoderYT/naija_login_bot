@@ -5,6 +5,10 @@
 .env.test.local
 .env.production.local
 
+# Firebase credentials
+*-firebase-adminsdk-*.json
+astrobot-343ab-firebase-adminsdk-htxr6-97117af720.json
+
 # Node.js dependencies
 node_modules/
 npm-debug.log*
