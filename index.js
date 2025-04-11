@@ -7,11 +7,18 @@ const admin = require("firebase-admin"); // Firebase Admin SDK
 // Initialize Express app
 const app = express();
 
-// Initialize Firebase Admin SDK with service account credentials
+// Initialize Firebase using environment variables
 admin.initializeApp({
-  credential: admin.credential.cert(
-    require("./astrobot-343ab-firebase-adminsdk-htxr6-97117af720.json")
-  ),
+  credential: admin.credential.cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail:
+      process.env.FIREBASE_CLIENT_EMAIL ||
+      `firebase-adminsdk-htxr6@${process.env.FIREBASE_PROJECT_ID}.iam.gserviceaccount.com`,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY
+      ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
+      : undefined,
+  }),
+  databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
 });
 const db = admin.firestore();
 
