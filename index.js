@@ -70,7 +70,7 @@ bot.command("start", async (ctx) => {
 
 // Set up the webhook for Vercel deployment
 const PORT = process.env.PORT || 3000;
-const DOMAIN = process.env.DOMAIN || "https://your-vercel-domain.vercel.app";
+const DOMAIN = process.env.DOMAIN || "https://naija-login-bot.vercel.app/";
 
 // Use webhook in production (Vercel), polling in development
 if (process.env.NODE_ENV === "production") {
