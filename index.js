@@ -67,35 +67,33 @@ bot.command("start", async (ctx) => {
 });
 
 // Set up the webhook for Vercel deployment
-const PORT = process.env.PORT || 3000;
-const DOMAIN = process.env.DOMAIN || "https://naija-login-bot.vercel.app";
+const PORT = 3000;
+const DOMAIN = "https://naija-login-bot.vercel.app";
 
-// Use webhook in production (Vercel), polling in development
-if (process.env.NODE_ENV === "production") {
-  bot
-    .launch({
-      webhook: {
-        domain: DOMAIN,
-        port: PORT,
-      },
-    })
-    .then(() => {
-      console.log(`Bot is running in webhook mode on ${DOMAIN}`);
-    })
-    .catch((err) => {
-      console.error("Failed to launch bot in webhook mode:", err);
-    });
-} else {
-  // Use polling for local development
-  bot
-    .launch()
-    .then(() => {
-      console.log("Bot is running in polling mode...");
-    })
-    .catch((err) => {
-      console.error("Failed to launch bot in polling mode:", err);
-    });
-}
+ bot
+   .launch({
+     webhook: {
+       domain: DOMAIN,
+       port: PORT,
+     },
+   })
+   .then(() => {
+     console.log(`Bot is running in webhook mode on ${DOMAIN}`);
+   })
+   .catch((err) => {
+     console.error("Failed to launch bot in webhook mode:", err);
+   });
+
+
+  // bot
+  //   .launch()
+  //   .then(() => {
+  //     console.log("Bot is running in polling mode...");
+  //   })
+  //   .catch((err) => {
+  //     console.error("Failed to launch bot in polling mode:", err);
+  //   });
+
 
 // Enable graceful stop
 process.once("SIGINT", () => bot.stop("SIGINT"));
