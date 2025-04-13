@@ -1,6 +1,6 @@
+// api/webhook.js - This will be your serverless function endpoint
 require("dotenv").config();
 const { Telegraf } = require("telegraf");
-const express = require("express");
 const { v4: uuidv4 } = require("uuid");
 const { initializeApp } = require("firebase/app");
 const {
@@ -10,9 +10,6 @@ const {
   setDoc,
   serverTimestamp,
 } = require("firebase/firestore");
-
-// Initialize Express app
-const app = express();
 
 // Firebase Client SDK Configuration
 const firebaseConfig = {
@@ -28,10 +25,10 @@ const firebaseConfig = {
 const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
 
-// Initialize Telegram Bot
+// Initialize Telegram Bot with webhook response
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-// Function to generate login code (same as before)
+// Function to generate login code
 const generateLoginCode = () => {
   const uuid = uuidv4().replace(/-/g, "");
   const randomString = Math.random().toString(36).substring(2, 15);
@@ -66,38 +63,18 @@ bot.command("start", async (ctx) => {
   }
 });
 
-// Set up the webhook for Vercel deployment
-const PORT = 3000;
-const DOMAIN = "https://naija-login-bot.vercel.app";
+// Export the handler function for Vercel
+module.exports = async (req, res) => {
+  try {
+    // Process the update from Telegram
+    if (req.method === "POST") {
+      await bot.handleUpdate(req.body);
+    }
 
- bot
-   .launch({
-     webhook: {
-       domain: DOMAIN,
-       port: PORT,
-     },
-   })
-   .then(() => {
-     console.log(`Bot is running in webhook mode on ${DOMAIN}`);
-   })
-   .catch((err) => {
-     console.error("Failed to launch bot in webhook mode:", err);
-   });
-
-
-  // bot
-  //   .launch()
-  //   .then(() => {
-  //     console.log("Bot is running in polling mode...");
-  //   })
-  //   .catch((err) => {
-  //     console.error("Failed to launch bot in polling mode:", err);
-  //   });
-
-
-// Enable graceful stop
-process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
-
-// Export the Express app for Vercel
-module.exports = app;
+    // Return a success response
+    res.status(200).send("OK");
+  } catch (error) {
+    console.error("Error processing webhook:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
